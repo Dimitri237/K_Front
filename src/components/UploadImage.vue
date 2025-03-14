@@ -1,16 +1,17 @@
 <template>
   <div class="container">
     <nav class="navbar">
-      <h1 class="logo">Test K_rel</h1>
+      <h1 class="logo">{{ userName }}</h1>
       <div class="nav-options">
         <i class="fa fa-user"></i>
-        <i class="fa fa-power-off power-icon"></i>
+        <i @click="logout" class="fa fa-power-off power-icon"></i>
       </div>
     </nav>
     <div class="content">
       <ul class="options-list">
         <li @click="show_tatou" class="option-item">Tatouer une image</li>
         <li @click="show_verify" class="option-item">Extraire des données</li>
+        <li @click="show_images" class="option-item">Afficher les images</li>
       </ul>
     </div>
 
@@ -23,13 +24,8 @@
           <input type="file" @change="onFileChange" class="file-input" />
           <div class="metadata-input">
             <label for="metadata">Données à tatouer :</label>
-            <textarea
-              id="metadata"
-              v-model="customMetadata"
-              placeholder="Entrez les données à tatouer"
-              rows="3"
-              class="metadata-textarea"
-            ></textarea>
+            <textarea id="metadata" v-model="customMetadata" placeholder="Entrez les données à tatouer" rows="3"
+              class="metadata-textarea"></textarea>
           </div>
           <button @click="uploadImage" :disabled="!selectedFile" class="upload-button">
             Télécharger et Tatouer
@@ -60,6 +56,24 @@
       </div>
     </div>
 
+    <!-- Section pour afficher toutes les images -->
+    <div v-if="showImagesSection" class="section">
+      <div class="section-content">
+        <button @click="closeImagesSection" class="close-button">×</button>
+        <h2>Images Tatouées</h2>
+        <div v-if="loading">Chargement en cours...</div>
+        <div v-else>
+          <div v-for="image in images" :key="image.id" class="image-container">
+            <h3>{{ image.original_name }}</h3>
+            <p><strong>Métadonnées :</strong> {{ image.metadata }}</p>
+            <img :src="`data:image/jpeg;base64,${image.image_data}`" :alt="image.original_name" class="preview-image" />
+            <button @click="downloadImage(image)" class="download-button">Télécharger</button>
+            <button @click="deleteImage(image.id)" class="delete-button">Supprimer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Affichage des métadonnées de l'image tatouée -->
     <div class="section" v-if="tatoueeMetadata">
       <div class="metadata-display">
@@ -85,18 +99,52 @@ export default {
       customMetadata: '', // Initialisé à vide
       isUploading: false,
       tatoue_img: false,
-      verifi_img: false
+      verifi_img: false,
+      showImagesSection: false, // Nouvelle variable pour afficher la section des images
+      images: [], // Liste des images récupérées
+      loading: false, // Indicateur de chargement
+      userName: '',
     };
+  },
+  mounted() {
+    this.userName = localStorage.getItem('userName');
   },
   methods: {
     show_tatou() {
       this.tatoue_img = true;
       this.verifi_img = false;
+      this.showImagesSection = false;
       this.generateMetadata(); // Générer un ID unique
     },
     show_verify() {
       this.verifi_img = true;
       this.tatoue_img = false;
+      this.showImagesSection = false;
+    },
+    async deleteImage(imageId) {
+      try {
+        const response = await fetch(`http://localhost:3000/images/${imageId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          // Supprimer l'image de la liste locale
+          this.images = this.images.filter(image => image.id !== imageId);
+          alert('Image supprimée avec succès !');
+        } else {
+          const errorData = await response.json();
+          alert(`Erreur lors de la suppression : ${errorData.message}`);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la suppression de l\'image :', error);
+        alert('Une erreur est survenue pendant la suppression.');
+      }
+    },
+    show_images() {
+      this.showImagesSection = true;
+      this.tatoue_img = false;
+      this.verifi_img = false;
+      this.fetchImages(); // Récupérer les images
     },
     closeTatou() {
       this.tatoue_img = false;
@@ -105,6 +153,9 @@ export default {
     closeVerify() {
       this.verifi_img = false;
       this.resetForm();
+    },
+    closeImagesSection() {
+      this.showImagesSection = false;
     },
     resetForm() {
       this.selectedFile = null;
@@ -130,7 +181,7 @@ export default {
         reader.readAsDataURL(file);
       }
     },
-    reload(){
+    reload() {
       window.location.reload();
     },
     async uploadImage() {
@@ -185,7 +236,33 @@ export default {
         console.error('Erreur lors de la vérification des métadonnées :', error);
         this.verificationResult = 'Erreur lors de la vérification';
       }
-    }
+    },
+    async fetchImages() {
+      this.loading = true;
+      try {
+        const response = await fetch('http://localhost:3000/images');
+        const data = await response.json();
+        this.images = data.images;
+      } catch (error) {
+        console.error('Erreur lors de la récupération des images :', error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userName');
+      this.$router.push("/")
+    },
+    downloadImage(image) {
+      // Créer un lien de téléchargement
+      const link = document.createElement('a');
+      link.href = `data:image/jpeg;base64,${image.image_data}`;
+      link.download = image.original_name; // Nom du fichier à télécharger
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    },
   },
 };
 </script>
@@ -201,12 +278,53 @@ export default {
   --border-color: #ddd;
   --shadow-color: rgba(0, 0, 0, 0.1);
 }
+.delete-button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #ff4d4d; /* Couleur rouge */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px; /* Espacement entre les boutons */
+}
 
+.delete-button:hover {
+  background-color: #cc0000; /* Couleur rouge plus foncée au survol */
+}
 body {
   margin: 0;
   font-family: 'Arial', sans-serif;
   background-color: var(--background-color);
   color: var(--text-color);
+}
+
+/* Vos styles existants */
+.image-container {
+  margin-bottom: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.preview-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.download-button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.download-button:hover {
+  background-color: #45a049;
 }
 
 .container {
@@ -242,7 +360,7 @@ body {
 }
 
 .content {
-  width: 60%;
+  width: 90%;
   margin: auto;
   text-align: center;
 }
@@ -257,11 +375,13 @@ body {
 
 .option-item {
   box-shadow: 0px 0px 10px var(--shadow-color);
-  font-size: 24px;
-  width: 36%;
+  font-size: 30px;
+  width: 30%;
   padding: 20px;
+  padding: 5vh 0;
   border-radius: 15px;
   transition: all 0.3s;
+  font-weight: bold;
   cursor: pointer;
 }
 
