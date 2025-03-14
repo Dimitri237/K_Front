@@ -59,7 +59,7 @@
     </div>
 
     <!-- Section pour afficher toutes les images -->
-    <div v-if="showImagesSection" class="section">
+    <div v-if="showImagesSection" @click="closeI" class="section">
   <div class="section-content animate__animated animate__fadeInUp">
     <button @click="closeImagesSection" class="close-button">×</button>
     <h2>Images Tatouées</h2>
@@ -112,6 +112,10 @@ export default {
     this.userName = localStorage.getItem('userName');
   },
   methods: {
+    
+    closeI(){
+      this.showImagesSection = false;
+    },
     show_tatou() {
       this.tatoue_img = true;
       this.verifi_img = false;
