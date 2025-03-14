@@ -70,6 +70,7 @@ export default {
 };
 </script>
 <style scoped>
+
 :root {
     --primary-color: #4CAF50;
     --secondary-color: #f0f8ff;

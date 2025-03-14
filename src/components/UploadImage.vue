@@ -60,21 +60,21 @@
 
     <!-- Section pour afficher toutes les images -->
     <div v-if="showImagesSection" class="section">
-      <div class="section-content animate__animated animate__fadeInUp">
-        <button @click="closeImagesSection" class="close-button">×</button>
-        <h2>Images Tatouées</h2>
-        <div v-if="loading">Chargement en cours...</div>
-        <div v-else>
-          <div v-for="image in images" :key="image.id" class="image-container">
-            <h3>{{ image.original_name }}</h3>
-            <p><strong>Métadonnées :</strong> {{ image.metadata }}</p>
-            <img :src="`data:image/jpeg;base64,${image.image_data}`" :alt="image.original_name" class="preview-image" />
-            <button @click="downloadImage(image)" class="download-button">Télécharger</button>
-            <button @click="deleteImage(image.id)" class="delete-button">Supprimer</button>
-          </div>
-        </div>
+  <div class="section-content animate__animated animate__fadeInUp">
+    <button @click="closeImagesSection" class="close-button">×</button>
+    <h2>Images Tatouées</h2>
+    <div v-if="loading">Chargement en cours...</div>
+    <div v-else class="image-list-container">
+      <div v-for="image in images" :key="image.id" class="image-container">
+        <h3>{{ image.original_name }}</h3>
+        <p><strong>Métadonnées :</strong> {{ image.metadata }}</p>
+        <img :src="`data:image/jpeg;base64,${image.image_data}`" :alt="image.original_name" class="preview-image" />
+        <button @click="downloadImage(image)" class="download-button">Télécharger</button>
+        <button @click="deleteImage(image.id)" class="delete-button">Supprimer</button>
       </div>
     </div>
+  </div>
+</div>
 
     <!-- Affichage des métadonnées de l'image tatouée -->
     <div class="section" v-if="tatoueeMetadata">
@@ -280,28 +280,12 @@ export default {
   --border-color: #ddd;
   --shadow-color: rgba(0, 0, 0, 0.1);
 }
-.delete-button {
-  margin-top: 10px;
-  padding: 8px 16px;
-  background-color: #ff4d4d; /* Couleur rouge */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 10px; /* Espacement entre les boutons */
+.image-list-container {
+  max-height: 400px; /* Hauteur maximale du conteneur */
+  overflow-y: auto; /* Activer le défilement vertical */
+  padding-right: 10px; /* Espace pour éviter que le contenu ne chevauche la barre de défilement */
 }
 
-.delete-button:hover {
-  background-color: #cc0000; /* Couleur rouge plus foncée au survol */
-}
-body {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-/* Vos styles existants */
 .image-container {
   margin-bottom: 20px;
   padding: 10px;
@@ -328,6 +312,28 @@ body {
 .download-button:hover {
   background-color: #45a049;
 }
+
+.delete-button {
+  margin-top: 10px;
+  padding: 8px 16px;
+  background-color: #ff4d4d; /* Couleur rouge */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 10px; /* Espacement entre les boutons */
+}
+
+.delete-button:hover {
+  background-color: #cc0000; /* Couleur rouge plus foncée au survol */
+}
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
 
 .container {
   width: 100%;
@@ -482,13 +488,6 @@ body {
 .image-preview {
   margin: 20px 0;
   text-align: center;
-}
-
-.preview-image {
-  max-width: 100%;
-  max-height: 300px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
 }
 
 .result,
