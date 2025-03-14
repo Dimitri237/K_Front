@@ -26,7 +26,7 @@
             <textarea
               id="metadata"
               v-model="customMetadata"
-              placeholder="Entrez les données à tatouer (ex: ID_Patient:12345)"
+              placeholder="Entrez les données à tatouer"
               rows="3"
               class="metadata-textarea"
             ></textarea>
@@ -65,13 +65,14 @@
       <h2>Métadonnées de l'image tatouée</h2>
       <div class="metadata-display">
         <p>{{ tatoueeMetadata }}</p>
-        <button @click="reload" class="upload-button">Ok</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { v4 as uuidv4 } from 'uuid'; // Importer uuid
+
 export default {
   data() {
     return {
@@ -80,7 +81,7 @@ export default {
       verificationResult: '',
       tatoueeMetadata: '',
       previewUrl: null,
-      customMetadata: 'ID_Patient:12345',
+      customMetadata: '', // Initialisé à vide
       isUploading: false,
       tatoue_img: false,
       verifi_img: false
@@ -90,6 +91,7 @@ export default {
     show_tatou() {
       this.tatoue_img = true;
       this.verifi_img = false;
+      this.generateMetadata(); // Générer un ID unique
     },
     show_verify() {
       this.verifi_img = true;
@@ -108,6 +110,11 @@ export default {
       this.selectedFileForVerification = null;
       this.previewUrl = null;
       this.verificationResult = '';
+      this.customMetadata = ''; // Réinitialiser les métadonnées
+    },
+    generateMetadata() {
+      const uniqueId = uuidv4(); // Générer un UUID unique
+      this.customMetadata = `ID_Patient:${uniqueId}`; // Pré-remplir avec l'ID généré
     },
     onFileChange(event) {
       this.selectedFile = event.target.files[0];
@@ -140,7 +147,6 @@ export default {
         });
         const data = await response.json();
         alert(data.message);
-        window.location.reload();
         this.tatoueeMetadata = this.customMetadata;
       } catch (error) {
         console.error('Erreur lors du téléchargement de l\'image :', error);
@@ -148,9 +154,6 @@ export default {
       } finally {
         this.isUploading = false;
       }
-    },
-    reload(){
-      window.location.reload();
     },
     onFileChangeForVerification(event) {
       this.selectedFileForVerification = event.target.files[0];
@@ -174,7 +177,6 @@ export default {
         console.log('Réponse du serveur:', data);
         this.verificationResult = data.metadata;
         this.tatoueeMetadata = data.metadata;
-        // window.location.reload();
       } catch (error) {
         console.error('Erreur lors de la vérification des métadonnées :', error);
         this.verificationResult = 'Erreur lors de la vérification';
