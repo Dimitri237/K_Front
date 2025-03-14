@@ -62,9 +62,10 @@
 
     <!-- Affichage des métadonnées de l'image tatouée -->
     <div class="section" v-if="tatoueeMetadata">
-      <h2>Métadonnées de l'image tatouée</h2>
       <div class="metadata-display">
+        <h2>Métadonnées de l'image tatouée</h2>
         <p>{{ tatoueeMetadata }}</p>
+        <button @click="reload" class="upload-button">Ok</button>
       </div>
     </div>
   </div>
@@ -128,6 +129,9 @@ export default {
         };
         reader.readAsDataURL(file);
       }
+    },
+    reload(){
+      window.location.reload();
     },
     async uploadImage() {
       if (!this.selectedFile) {
@@ -328,7 +332,8 @@ body {
   margin-bottom: 10px;
 }
 
-.upload-button, .verify-button {
+.upload-button,
+.verify-button {
   padding: 10px 20px;
   background-color: var(--primary-color);
   color: white;
@@ -338,11 +343,13 @@ body {
   transition: background-color 0.3s;
 }
 
-.upload-button:hover, .verify-button:hover {
+.upload-button:hover,
+.verify-button:hover {
   background-color: var(--hover-color);
 }
 
-.upload-button:disabled, .verify-button:disabled {
+.upload-button:disabled,
+.verify-button:disabled {
   background-color: var(--disabled-color);
   cursor: not-allowed;
 }
@@ -359,7 +366,8 @@ body {
   border-radius: 4px;
 }
 
-.result, .metadata-display {
+.result,
+.metadata-display {
   padding: 15px;
   border: 1px solid var(--border-color);
   border-radius: 4px;
