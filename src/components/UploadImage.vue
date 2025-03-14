@@ -1,23 +1,24 @@
 <template>
   <div class="container">
     <nav class="navbar">
-      <h1 class="logo">{{ userName }}</h1>
+      <h4 class="logo">K_RELLE <i class="fas fa-laptop-medical"></i></h4>
       <div class="nav-options">
+        {{ userName }}
         <i class="fa fa-user"></i>
         <i @click="logout" class="fa fa-power-off power-icon"></i>
       </div>
     </nav>
     <div class="content">
       <ul class="options-list">
-        <li @click="show_tatou" class="option-item">Tatouer une image</li>
-        <li @click="show_verify" class="option-item">Extraire des données</li>
-        <li @click="show_images" class="option-item">Afficher les images</li>
+        <li @click="show_tatou" class="option-item animate__animated animate__fadeInDown"><i class="fas fa-smile-wink"></i><h4>Tatouer une image</h4></li>
+        <li @click="show_verify" class="option-item animate__animated animate__fadeInUp"><i class="fas fa-smile-beam"></i><h4>Extraire des données</h4></li>
+        <li @click="show_images" class="option-item animate__animated animate__fadeInDown"><i class="fas fa-smile"></i><h4>Afficher les images</h4></li>
       </ul>
     </div>
 
     <!-- Boîte de dialogue pour tatouer une image -->
     <div v-if="tatoue_img" class="section">
-      <div class="section-content">
+      <div class="section-content animate__animated animate__fadeInUp">
         <button @click="closeTatou" class="close-button">×</button>
         <h2>Télécharger une image</h2>
         <div class="form-group">
@@ -40,7 +41,7 @@
 
     <!-- Boîte de dialogue pour vérifier les métadonnées -->
     <div v-if="verifi_img" class="section">
-      <div class="section-content">
+      <div class="section-content animate__animated animate__fadeInUp">
         <button @click="closeVerify" class="close-button">×</button>
         <h2>Vérifier les métadonnées</h2>
         <div class="form-group">
@@ -58,7 +59,7 @@
 
     <!-- Section pour afficher toutes les images -->
     <div v-if="showImagesSection" class="section">
-      <div class="section-content">
+      <div class="section-content animate__animated animate__fadeInUp">
         <button @click="closeImagesSection" class="close-button">×</button>
         <h2>Images Tatouées</h2>
         <div v-if="loading">Chargement en cours...</div>
@@ -383,8 +384,11 @@ body {
   transition: all 0.3s;
   font-weight: bold;
   cursor: pointer;
+  display: block;
 }
-
+.option-item i {
+  font-size: 60px;
+}
 .option-item:hover {
   background-color: var(--primary-color);
   color: white;

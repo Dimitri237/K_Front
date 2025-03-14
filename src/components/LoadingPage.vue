@@ -1,6 +1,6 @@
 <template>
   <div class="splash-screen">
-    <h1 class="animate__animated animate__fadeInDown">K_RELLE</h1>
+    <h1 class="animate__animated animate__fadeInDown">K_RELLE <i class="fas fa-laptop-medical"></i></h1>
     <h2 class="animate__animated animate__fadeInUp">Scanner</h2>
 
   </div>
