@@ -139,6 +139,7 @@ export default {
         });
         const data = await response.json();
         alert(data.message);
+        window.location.reload();
         this.tatoueeMetadata = this.customMetadata;
       } catch (error) {
         console.error('Erreur lors du téléchargement de l\'image :', error);
@@ -169,6 +170,7 @@ export default {
         console.log('Réponse du serveur:', data);
         this.verificationResult = data.metadata;
         this.tatoueeMetadata = data.metadata;
+        window.location.reload();
       } catch (error) {
         console.error('Erreur lors de la vérification des métadonnées :', error);
         this.verificationResult = 'Erreur lors de la vérification';
