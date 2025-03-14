@@ -6,6 +6,7 @@
         {{ userName }}
         <i class="fa fa-user"></i>
         <i @click="logout" class="fa fa-power-off power-icon"></i>
+        <i style="color: #4CAF50;" class="fas fa-bell"></i>
       </div>
     </nav>
     <div class="content">
@@ -337,7 +338,7 @@ body {
 .navbar {
   width: 90%;
   margin: auto;
-  padding: 10px 1%;
+  padding: 0px 1%;
   display: flex;
   justify-content: space-between;
   align-items: center;

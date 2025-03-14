@@ -4,7 +4,7 @@
             <img src="" alt="" />
         </nav>
         <div>
-            <h2 class="monda-font">Connexion</h2>
+            <h2 style="font-size: 65px;" class="monda-font"><i class="fas fa-key"></i></h2>
         </div>
         <form @submit.prevent="login">
             <div class="input-field">
@@ -20,6 +20,7 @@
                     <span class="loading-indicator" v-if="loading"></span>
                     <span v-else>Connexion</span>
                 </button>
+                <p style="color: red; font-style: italic;" v-if="erreurConnexion"> mot de passe ou utilisateur incorrect</p>
             </div>
         </form>
     </div>
@@ -33,6 +34,7 @@ export default {
             email: '',
             password: '',
             loading: false,
+            erreurConnexion: false
         };
     },
 
@@ -58,6 +60,7 @@ export default {
                 this.$router.push('/home');
             } catch (error) {
                 console.error(error);
+                this.erreurConnexion = true;
                 // Afficher un message d'erreur à l'utilisateur
             } finally {
                 this.loading = false;
