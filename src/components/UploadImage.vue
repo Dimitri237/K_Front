@@ -65,6 +65,7 @@
       <h2>Métadonnées de l'image tatouée</h2>
       <div class="metadata-display">
         <p>{{ tatoueeMetadata }}</p>
+        <button @click="reload" class="upload-button">Ok</button>
       </div>
     </div>
   </div>
@@ -148,6 +149,9 @@ export default {
         this.isUploading = false;
       }
     },
+    reload(){
+      window.location.reload();
+    },
     onFileChangeForVerification(event) {
       this.selectedFileForVerification = event.target.files[0];
     },
@@ -170,7 +174,7 @@ export default {
         console.log('Réponse du serveur:', data);
         this.verificationResult = data.metadata;
         this.tatoueeMetadata = data.metadata;
-        window.location.reload();
+        // window.location.reload();
       } catch (error) {
         console.error('Erreur lors de la vérification des métadonnées :', error);
         this.verificationResult = 'Erreur lors de la vérification';
